@@ -55,8 +55,9 @@ const styles = StyleSheet.create({
     width, // Each slide takes full screen width
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start", // Align content to top instead of center
     padding: 20,
+    paddingTop: 0, // Remove top padding to align to very top
     backgroundColor: "#fff", // White background for the content area
   },
   logo: {
@@ -64,6 +65,7 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "contain",
     marginBottom: 20,
+    marginTop: 220, // Add some space above the logo
   },
   welcomeTitle: {
     fontSize: 28,
@@ -78,9 +80,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   image: {
-    width: width * 0.8, // Image takes 80% of screen width
-    height: width * 0.8, // Keep aspect ratio
+    width: width * 1, // Image takes 95% of screen width (increased from 80%)
+    height: width * 1.09, // Keep the same height ratio
     resizeMode: "contain",
+    marginTop: 0, // Zero top margin to align to top
     marginBottom: 40,
   },
   title: {
@@ -89,6 +92,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#333",
     textAlign: "center",
+    marginTop: 115, // Add some space above the title
   },
   description: {
     fontSize: 16,

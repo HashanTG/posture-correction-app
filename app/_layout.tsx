@@ -49,10 +49,24 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <Stack screenOptions={{ headerShown: false }}>
+        {/*
+        This determines the initial screen.
+        If you have persistent onboarding enabled, change this to:
+        <Stack.Screen name={onboardingComplete ? "(tabs)" : "onboarding/index"} />
+        And make sure your "(tabs)" _layout.tsx is correctly set up for your main app flow.
+      */}
+        <Stack.Screen name="onboarding/index" />
+        <Stack.Screen
+          name="register/index"
+          options={{ presentation: "modal" }}
+        />
+        {/* Your existing tabs layout, ensuring it's accessible after registration */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+
+        {/* This is an example of a 404 screen, automatically handled by Expo Router */}
+        <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
   );

@@ -35,25 +35,42 @@ const OnboardingScreen: React.FC = () => {
 
   // Function to scroll to the next slide or navigate to register page
   const scrollToNext = async () => {
+    console.log("➡️ Next button pressed, current index:", currentIndex);
     // Made async for AsyncStorage if used
     if (currentIndex < slides.length - 1) {
       slidesRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      // Last slide, navigate to registration
-      // if (AsyncStorage) { // Use this block if you want persistent onboarding
-      //   await AsyncStorage.setItem('onboardingComplete', 'true');
-      // }
-      router.replace("/register"); // Use replace to clear onboarding from navigation history
+      console.log("📝 Last slide reached, navigating to register...");
+      try {
+        // Last slide, navigate to registration
+        // if (AsyncStorage) { // Use this block if you want persistent onboarding
+        //   await AsyncStorage.setItem('onboardingComplete', 'true');
+        // }
+        router.replace("/register" as any); // Fixed route path for register screen
+        console.log("✅ Navigation to register completed");
+      } catch (error) {
+        console.log("❌ Navigation to register failed:", error);
+      }
     }
   };
 
   // Handler for the 'Get Started' button on the first screen
   const handleGetStarted = async () => {
-    // Made async for AsyncStorage if used
-    // if (AsyncStorage) { // Use this block if you want persistent onboarding
-    //   await AsyncStorage.setItem('onboardingComplete', 'true');
-    // }
-    router.replace("/register"); // Navigate directly to registration
+    console.log("🚀 Get Started button pressed");
+    try {
+      console.log("🔄 Navigating to register...");
+      // Made async for AsyncStorage if used
+      // if (AsyncStorage) { // Use this block if you want persistent onboarding
+      //   await AsyncStorage.setItem('onboardingComplete', 'true');
+      // }
+      router.replace("/register" as any); // Fixed route path for register screen
+      console.log("✅ Navigation completed");
+    } catch (error) {
+      console.log("❌ Navigation error:", error);
+      // Try alternative navigation
+      console.log("🔄 Trying push navigation...");
+      router.push("/register" as any);
+    }
   };
 
   return (
@@ -108,7 +125,10 @@ const OnboardingScreen: React.FC = () => {
           <TouchableOpacity
             style={styles.getStartedButton}
             onPress={handleGetStarted}
+            onPressIn={() => console.log("🔽 Get Started button press started")}
+            onPressOut={() => console.log("🔼 Get Started button press ended")}
             accessibilityLabel="Get Started"
+            activeOpacity={0.8}
           >
             <Text style={styles.buttonText}>{slides[0].buttonText}</Text>
           </TouchableOpacity>
@@ -117,7 +137,10 @@ const OnboardingScreen: React.FC = () => {
           <TouchableOpacity
             style={styles.nextButton}
             onPress={scrollToNext}
+            onPressIn={() => console.log("🔽 Next button press started")}
+            onPressOut={() => console.log("🔼 Next button press ended")}
             accessibilityLabel="Next Onboarding Screen"
+            activeOpacity={0.8}
           >
             <Text style={styles.nextButtonText}>›</Text>
           </TouchableOpacity>
@@ -164,6 +187,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    zIndex: 10,
   },
   buttonText: {
     color: "white",
@@ -182,6 +206,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    zIndex: 10,
   },
   nextButtonText: {
     color: "white",

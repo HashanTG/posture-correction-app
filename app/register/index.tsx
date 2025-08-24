@@ -5,12 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Dimensions,
   Alert,
 } from "react-native";
 import { Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { registerWithEmail } from "../../utils/auth";
 
 const { width, height } = Dimensions.get("window");
 
@@ -22,7 +23,9 @@ const RegisterScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const handleRegister = () => {
+  const router = useRouter();
+
+  const handleRegister = async () => {
     if (!fullName || !phoneNumber || !email || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
@@ -31,8 +34,30 @@ const RegisterScreen: React.FC = () => {
       Alert.alert("Error", "Please accept the Terms of Use and Privacy Policy");
       return;
     }
-    // Handle registration logic here
-    Alert.alert("Success", "Registration successful!");
+    try {
+      console.log("📝 Attempting registration with:", email);
+      const result = await registerWithEmail(email, password);
+      console.log("✅ Registration successful:", result);
+
+      // Show success popup and redirect to login
+      Alert.alert(
+        "Success!",
+        "You are successfully registered! Please login to continue.",
+        [
+          {
+            text: "Login Now",
+            onPress: () => router.replace("/login"),
+          },
+        ]
+      );
+    } catch (error: any) {
+      console.log("❌ Registration error:", error);
+      console.log("Error code:", error.code);
+      console.log("Error message:", error.message);
+
+      const message = (error && error.message) || "Registration failed";
+      Alert.alert("Error", `Registration failed: ${message}`);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -43,159 +68,153 @@ const RegisterScreen: React.FC = () => {
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
-     
-
       {/* Main Content */}
       <View style={styles.formContainer}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.greeting}>Hey there,</Text>
-            <Text style={styles.title}>Create an Account</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.greeting}>Hey there,</Text>
+          <Text style={styles.title}>Create an Account</Text>
+        </View>
+
+        {/* Input Fields */}
+        <View style={styles.inputContainer}>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="person-outline"
+              size={20}
+              color="#999"
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              placeholderTextColor="#999"
+              value={fullName}
+              onChangeText={setFullName}
+            />
           </View>
 
-          {/* Input Fields */}
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="person-outline"
-                size={20}
-                color="#999"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Full Name"
-                placeholderTextColor="#999"
-                value={fullName}
-                onChangeText={setFullName}
-              />
-            </View>
-
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="call-outline"
-                size={20}
-                color="#999"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Phone Number"
-                placeholderTextColor="#999"
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                keyboardType="phone-pad"
-              />
-            </View>
-
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color="#999"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="lock-closed-outline"
-                size={20}
-                color="#999"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#999"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeIcon}
-              >
-                <Ionicons
-                  name={showPassword ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color="#999"
-                />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="call-outline"
+              size={20}
+              color="#999"
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              placeholderTextColor="#999"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              keyboardType="phone-pad"
+            />
           </View>
 
-          {/* Terms and Conditions */}
-          <TouchableOpacity
-            style={styles.checkboxContainer}
-            onPress={() => setAcceptTerms(!acceptTerms)}
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="mail-outline"
+              size={20}
+              color="#999"
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#999"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="lock-closed-outline"
+              size={20}
+              color="#999"
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#999"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.eyeIcon}
+            >
+              <Ionicons
+                name={showPassword ? "eye-outline" : "eye-off-outline"}
+                size={20}
+                color="#999"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Terms and Conditions */}
+        <TouchableOpacity
+          style={styles.checkboxContainer}
+          onPress={() => setAcceptTerms(!acceptTerms)}
+        >
+          <View
+            style={[styles.checkbox, acceptTerms && styles.checkboxChecked]}
           >
-            <View
-              style={[styles.checkbox, acceptTerms && styles.checkboxChecked]}
-            >
-              {acceptTerms && (
-                <Ionicons name="checkmark" size={16} color="#fff" />
-              )}
-            </View>
-            <Text style={styles.checkboxText}>
-              By continuing you accept our{" "}
-              <Text style={styles.linkText}>Privacy Policy</Text> and{" "}
-              <Text style={styles.linkText}>Terms of Use</Text>
-            </Text>
-          </TouchableOpacity>
+            {acceptTerms && (
+              <Ionicons name="checkmark" size={16} color="#fff" />
+            )}
+          </View>
+          <Text style={styles.checkboxText}>
+            By continuing you accept our{" "}
+            <Text style={styles.linkText}>Privacy Policy</Text> and{" "}
+            <Text style={styles.linkText}>Terms of Use</Text>
+          </Text>
+        </TouchableOpacity>
 
-          {/* Register Button */}
+        {/* Register Button */}
+        <TouchableOpacity
+          style={styles.registerButton}
+          onPress={handleRegister}
+        >
+          <View style={styles.gradientButton}>
+            <Text style={styles.registerButtonText}>Register</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Or Divider */}
+        <View style={styles.dividerContainer}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>Or</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        {/* Social Login Buttons */}
+        <View style={styles.socialContainer}>
           <TouchableOpacity
-            style={styles.registerButton}
-            onPress={handleRegister}
+            style={styles.socialButton}
+            onPress={() => handleSocialLogin("Google")}
           >
-            <View style={styles.gradientButton}>
-              <Text style={styles.registerButtonText}>Register</Text>
-            </View>
+            <Text style={styles.socialButtonText}>G</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.socialButton}
+            onPress={() => handleSocialLogin("Facebook")}
+          >
+            <Text style={styles.socialButtonText}>f</Text>
+          </TouchableOpacity>
+        </View>
 
-          {/* Or Divider */}
-          <View style={styles.dividerContainer}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>Or</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {/* Social Login Buttons */}
-          <View style={styles.socialContainer}>
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => handleSocialLogin("Google")}
-            >
-              <Text style={styles.socialButtonText}>G</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => handleSocialLogin("Facebook")}
-            >
-              <Text style={styles.socialButtonText}>f</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Login Link */}
-          <View style={styles.loginContainer}>
-            <Text style={styles.loginText}>Already have an account? </Text>
-            <TouchableOpacity
-              onPress={() => Alert.alert("Login", "Navigate to login page")}
-            >
-              <Text style={styles.loginLink}>Login</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        {/* Login Link */}
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginText}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => router.push("/login")}>
+            <Text style={styles.loginLink}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
